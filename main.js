@@ -8,12 +8,14 @@ const formu = document.getElementById('form');
 let maxC = 0;
 let contC = 1;
 
-//Arreglar que al recargar, no cargue el nombre si no hay nada escrito de antes
-
 if (localStorage.getItem('numColum')) {
     contC = JSON.parse(localStorage.getItem('numColum'));
 } else {
     localStorage.setItem('numColum', JSON.stringify(contC));
+}
+
+if (localStorage.getItem('Numero Columnas:')) {
+    maxC = parseInt(JSON.parse(localStorage.getItem('Numero Columnas:')));
 }
 
 label.textContent = `Nombre columna ${contC}:`;
@@ -37,13 +39,21 @@ if (localStorage.getItem('columnaOculta') === 'true') {
 }
 
 function numCol(e) {
-    localStorage.setItem('temporalColumna', colum.value);
+    if (colum.value.trim() !== '') {
+        localStorage.setItem('temporalColumna', colum.value);
+    } else {
+        localStorage.removeItem('temporalColumna');
+    }
 }
 
 colum.addEventListener('input', numCol);
 
 function nomCol(e) {
-    localStorage.setItem('temporalNombre', nom.value);
+    if (nom.value.trim() !== '') {
+        localStorage.setItem('temporalNombre', nom.value);
+    } else {
+        localStorage.removeItem('temporalNombre');
+    }
 }
 
 nom.addEventListener('input', nomCol);
@@ -74,6 +84,7 @@ function añadirNombre(e) {
     if (maxC === 0) {
         alert("Primero debes indicar el número de columnas");
         nom.value = '';
+        localStorage.removeItem('temporalNombre');
         return;
     }
 
@@ -82,6 +93,7 @@ function añadirNombre(e) {
     contC++;
     alert(`Contador después: ${contC}`);
     nom.value = '';
+    localStorage.removeItem('temporalNombre');
 
     localStorage.setItem('numColum', JSON.stringify(contC));
 
@@ -98,7 +110,7 @@ function añadirNombre(e) {
 
 botonN.addEventListener('click', añadirNombre);
 
-function limpiarJuegos() {
+function limpiarDatos() {
     localStorage.clear();
     alert("Se han eliminado todos los datos guardados.");
     contC = 1;
@@ -115,4 +127,4 @@ function limpiarJuegos() {
     nom.value = '';
 }
 
-limpiar.addEventListener('click', limpiarJuegos);
+limpiar.addEventListener('click', limpiarDatos);
