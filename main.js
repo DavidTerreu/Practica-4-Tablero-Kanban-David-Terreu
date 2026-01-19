@@ -9,8 +9,12 @@ const formu = document.getElementById('form');
 const limite = document.getElementById('limite');
 const botonL = document.getElementById('botonL');
 const tabla = document.getElementById('tabla');
+const nuevaTarea = document.getElementById('nuevaTarea');
 let maxC = 0;
 let contC = 1;
+
+// Ocultar sección de nueva tarea al inicio
+nuevaTarea.style.display = 'none';
 
 // Cargar contador de columnas desde localStorage si existe
 if (localStorage.getItem('numColum')) {
@@ -89,6 +93,12 @@ limite.addEventListener('input', limCol);
 //Funciones BOTONES
 function añadirColumna(e) {
     e.preventDefault();
+
+    if (colum.value === "") {
+        alert("Por favor, introduce un número de columnas.");
+        return;
+    }
+
     alert(`Has añadido ${colum.value} columnas.`);
     localStorage.setItem(`Numero Columnas:`, JSON.stringify(colum.value));
     colum.value = '';
@@ -121,6 +131,11 @@ function añadirNombre(e) {
         return;
     }
 
+    if (nom.value === "") {
+        alert("Por favor, introduce un nombre a la columna.");
+        return;
+    }
+
     alert(`Has añadido ${nom.value} como nombre de columna.`);
     localStorage.setItem(`Nombre Columna ${contC}:`, JSON.stringify(nom.value));
 
@@ -148,6 +163,7 @@ function añadirNombre(e) {
     if (contC > maxC) {
         formu.style.display = 'none';
         localStorage.setItem('columnaOculta', 'true');
+        nuevaTarea.style.display = '';
     }
 }
 
@@ -161,6 +177,7 @@ function limpiarDatos() {
 
     formu.style.display = '';
     tabla.innerHTML = '';
+    nuevaTarea.style.display = 'none';
 
     label.textContent = `Nombre columna ${contC}:`;
     labelLimite.textContent = `Límite columna ${contC}:`;
