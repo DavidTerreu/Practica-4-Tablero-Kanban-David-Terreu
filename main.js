@@ -9,18 +9,30 @@ const formu = document.getElementById('form');
 const limite = document.getElementById('limite');
 const botonL = document.getElementById('botonL');
 const tabla = document.getElementById('tabla');
+const tarea = document.getElementById('tarea');
+const botonTarea = document.getElementById('botonTarea');
 const nuevaTarea = document.getElementById('nuevaTarea');
 let maxC = 0;
 let contC = 1;
+let contT = 1;
 
 // Ocultar sección de nueva tarea al inicio
-nuevaTarea.style.display = 'none';
+if (formu.style.display !== 'none'){
+    nuevaTarea.style.display = 'none';
+}
 
 // Cargar contador de columnas desde localStorage si existe
 if (localStorage.getItem('numColum')) {
     contC = JSON.parse(localStorage.getItem('numColum'));
 } else {
     localStorage.setItem('numColum', JSON.stringify(contC));
+}
+
+// Cargar contador de tareas desde localStorage si existe
+if (localStorage.getItem('numTareas')) {
+    contT = JSON.parse(localStorage.getItem('numTareas'));
+} else {
+    localStorage.setItem('numTareas', JSON.stringify(contT));
 }
 
 // Cargar número máximo de columnas desde localStorage si existe
@@ -45,6 +57,10 @@ if (localStorage.getItem('temporalColumna')) {
 
 if (localStorage.getItem('temporalNombre')) {
     nom.value = localStorage.getItem('temporalNombre');
+}
+
+if (localStorage.getItem('temporalTarea')) {
+    tarea.value = localStorage.getItem('temporalTarea');
 }
 
 // Verificar si el input columna debe esta ocultos o deshabilitados
@@ -90,8 +106,64 @@ function limCol(e) {
 
 limite.addEventListener('input', limCol);
 
+function nomTarea(e) {
+    if (tarea.value.trim() !== '') {
+        localStorage.setItem('temporalTarea', tarea.value);
+    } else {
+        localStorage.removeItem('temporalTarea');
+    }
+}
+
+tarea.addEventListener('input', nomTarea);
+
+// Función para cargar las columnas guardadas
+function cargarColumnasGuardadas() {
+    if (maxC > 0) {
+        // Recrear los divs de las columnas
+        tabla.innerHTML = '';
+        for (let i = 1; i <= maxC; i++) {
+            const divColumna = document.createElement('div');
+            divColumna.id = `columna-${i}`;
+            tabla.appendChild(divColumna);
+            
+            // Recuperar y añadir el nombre si existe
+            const nombreGuardado = localStorage.getItem(`Nombre Columna ${i}:`);
+            if (nombreGuardado) {
+                const H3Columna = document.createElement('h3');
+                H3Columna.textContent = JSON.parse(nombreGuardado);
+                divColumna.appendChild(H3Columna);
+            }
+        }
+
+        // Cargar las tareas guardadas
+        for (let i = 1; i < contT; i++) {
+            const tareaGuardada = localStorage.getItem(`Tarea ${i}:`);
+            if (tareaGuardada) {
+                const tareaP = document.createElement('p');
+                tareaP.textContent = JSON.parse(tareaGuardada);
+                const columnaTarea = document.getElementById(`columna-1`);
+                if (columnaTarea) {
+                    columnaTarea.appendChild(tareaP);
+                }
+            }
+        }
+        
+        // Si ya se completaron todas las columnas, ocultar formulario
+        if (contC > maxC) {
+            formu.style.display = 'none';
+            nuevaTarea.style.display = '';
+        }
+    }
+}
+
+// Llamar a la función después de cargar maxC
+if (localStorage.getItem('Numero Columnas:')) {
+    maxC = parseInt(JSON.parse(localStorage.getItem('Numero Columnas:')));
+    cargarColumnasGuardadas(); // Añadir esta línea
+}
+
 //Funciones BOTONES
-function añadirColumna(e) {
+function aniadirColumna(e) {
     e.preventDefault();
 
     if (colum.value === "") {
@@ -119,9 +191,9 @@ function añadirColumna(e) {
     localStorage.setItem('inputOculto', 'true');
 }
 
-botonC.addEventListener('click', añadirColumna);
+botonC.addEventListener('click', aniadirColumna);
 
-function añadirNombre(e) {
+function aniadirNombre(e) {
     e.preventDefault();
 
     if (maxC === 0) {
@@ -167,12 +239,13 @@ function añadirNombre(e) {
     }
 }
 
-botonN.addEventListener('click', añadirNombre);
+botonN.addEventListener('click', aniadirNombre);
 
 function limpiarDatos() {
     localStorage.clear();
     alert("Se han eliminado todos los datos guardados.");
     contC = 1;
+    contT = 1;
     maxC = 0;
 
     formu.style.display = '';
@@ -189,9 +262,47 @@ function limpiarDatos() {
     colum.value = '';
     nom.value = '';
     limite.value = '';
+    tarea.value = '';
 
     limite.disabled = true;
     botonL.disabled = true;
+
+    localStorage.setItem('numColum', JSON.stringify(1));
 }
 
 limpiar.addEventListener('click', limpiarDatos);
+
+function aniadirTarea(e) {
+    e.preventDefault();
+
+    if (tarea.value.trim() === "") {
+        alert("Por favor, introduce una tarea.");
+        return;
+    }
+
+    alert(`Has añadido la tarea ${tarea.value}`);
+    localStorage.setItem(`Tarea ${contT}:`, JSON.stringify(tarea.value));
+
+    //Añadir el nombre de la tarea al primer div
+    const tareaP = document.createElement('p');
+    tareaP.textContent = tarea.value;
+    const columnaTarea = document.getElementById(`columna-1`);
+    if (columnaTarea) {
+        columnaTarea.appendChild(tareaP);
+    }
+
+    contT++;
+    alert(`Contador después: ${contT}`);
+    tarea.value = '';
+    localStorage.removeItem('temporalTarea');
+
+    localStorage.setItem('numTareas', JSON.stringify(contT));
+
+    if (contC > maxC) {
+        formu.style.display = 'none';
+        localStorage.setItem('columnaOculta', 'true');
+        nuevaTarea.style.display = '';
+    }
+}
+
+botonTarea.addEventListener('click', aniadirTarea);
