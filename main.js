@@ -50,7 +50,7 @@ if (contC <2){
     botonL.disabled = true;
 }
 
-// Cargar valores temporales desde localStorage si existen
+// Cargar valores temporales de los inputs desde localStorage si existen
 if (localStorage.getItem('temporalColumna')) {
     colum.value = localStorage.getItem('temporalColumna');
 }
@@ -119,14 +119,14 @@ tarea.addEventListener('input', nomTarea);
 // Función para cargar las columnas guardadas
 function cargarColumnasGuardadas() {
     if (maxC > 0) {
-        // Recrear los divs de las columnas
+        // Cargar los divs de las columnas
         tabla.innerHTML = '';
         for (let i = 1; i <= maxC; i++) {
             const divColumna = document.createElement('div');
             divColumna.id = `columna-${i}`;
             tabla.appendChild(divColumna);
             
-            // Recuperar y añadir el nombre si existe
+            // Cargar el nombre de las columnas si existen
             const nombreGuardado = localStorage.getItem(`Nombre Columna ${i}:`);
             if (nombreGuardado) {
                 const H3Columna = document.createElement('h3');
@@ -156,16 +156,19 @@ function cargarColumnasGuardadas() {
     }
 }
 
-// Llamar a la función después de cargar maxC
+// Usar la función después de cargar maxC
 if (localStorage.getItem('Numero Columnas:')) {
     maxC = parseInt(JSON.parse(localStorage.getItem('Numero Columnas:')));
-    cargarColumnasGuardadas(); // Añadir esta línea
+    cargarColumnasGuardadas();
 }
 
 //Funciones BOTONES
+
+//Añadir columna
 function aniadirColumna(e) {
     e.preventDefault();
 
+    //Validar que se ha introducido algún dato
     if (colum.value === "") {
         alert("Por favor, introduce un número de columnas.");
         return;
@@ -196,6 +199,7 @@ botonC.addEventListener('click', aniadirColumna);
 function aniadirNombre(e) {
     e.preventDefault();
 
+    //Validar que se introduzca el número de columnas antes de añadir nombres
     if (maxC === 0) {
         alert("Primero debes indicar el número de columnas");
         nom.value = '';
@@ -203,6 +207,7 @@ function aniadirNombre(e) {
         return;
     }
 
+    //Validar que se ha introducido algún dato
     if (nom.value === "") {
         alert("Por favor, introduce un nombre a la columna.");
         return;
@@ -248,10 +253,12 @@ function limpiarDatos() {
     contT = 1;
     maxC = 0;
 
+    //Mostrar formulario y ocultar nueva tarea
     formu.style.display = '';
     tabla.innerHTML = '';
     nuevaTarea.style.display = 'none';
 
+    //Reiniciar labels
     label.textContent = `Nombre columna ${contC}:`;
     labelLimite.textContent = `Límite columna ${contC}:`;
 
@@ -275,7 +282,8 @@ limpiar.addEventListener('click', limpiarDatos);
 function aniadirTarea(e) {
     e.preventDefault();
 
-    if (tarea.value.trim() === "") {
+    //Validar que se ha introducido algún dato
+    if (tarea.value === "") {
         alert("Por favor, introduce una tarea.");
         return;
     }
@@ -283,7 +291,7 @@ function aniadirTarea(e) {
     alert(`Has añadido la tarea ${tarea.value}`);
     localStorage.setItem(`Tarea ${contT}:`, JSON.stringify(tarea.value));
 
-    //Añadir el nombre de la tarea al primer div
+    //Añadir el nombre de la tarea siempre al primer div
     const tareaP = document.createElement('p');
     tareaP.textContent = tarea.value;
     const columnaTarea = document.getElementById(`columna-1`);
