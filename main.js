@@ -149,7 +149,10 @@ function cargarColumnasGuardadas() {
                 tareaP.draggable = true;
                 tareaP.id = `tarea-${i}`;
                 tareaP.addEventListener('dragstart', inicioDrag);
-                const columnaTarea = document.getElementById(`columna-1`);
+
+                const columnaID = localStorage.getItem(`tarea-${i}`) || 'columna-1';
+
+                const columnaTarea = document.getElementById(columnaID);
                 if (columnaTarea) {
                     columnaTarea.appendChild(tareaP);
                 }
@@ -311,6 +314,7 @@ function aniadirTarea(e) {
     const columnaTarea = document.getElementById(`columna-1`);
     if (columnaTarea) {
         columnaTarea.appendChild(tareaP);
+        localStorage.setItem(`tarea-${contT}`, 'columna-1');
     }
 
     contT++;
@@ -343,4 +347,5 @@ function drop(e) {
     const idTarea = e.dataTransfer.getData('text/plain');
     const tareaArrastrada = document.getElementById(idTarea);
     e.currentTarget.appendChild(tareaArrastrada);
+    localStorage.setItem(idTarea, e.currentTarget.id);
 }

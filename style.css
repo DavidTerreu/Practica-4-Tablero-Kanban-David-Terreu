@@ -29,10 +29,14 @@ td{
 #tabla{
     display: flex;
 }
+.columnaDROP{
+    width: 15%;
+}
 h3{
     border: 1px solid black;
     text-align: center;
     background-color: lightgreen;
+    padding: 1%;
 }
 p{
     border: 1px solid black;
